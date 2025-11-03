@@ -17,7 +17,6 @@ local Services = setmetatable({}, {
     end
 })
 
--- Stores all registered callbacks
 CallbackLib._callbacks = {}
 
 -- Create a new callback type (event)
@@ -49,11 +48,11 @@ end
 local Players = Services.Players
 local RunService = Services.RunService
 
--- PlayerAdded
-Players.PlayerAdded:Connect(function(player)
+-- Function to hook a player fully (chat + char events)
+local function HookPlayer(player)
     CallbackLib:Fire("onPlayerAdded", player)
 
-    -- CharacterAdded / Removing
+    -- Character events
     player.CharacterAdded:Connect(function(char)
         CallbackLib:Fire("onCharacterAdded", player, char)
     end)
@@ -71,32 +70,36 @@ Players.PlayerAdded:Connect(function(player)
             CallbackLib:Fire("onChatMessage", player, message)
         end)
     end
-end)
+end
+
+-- Hook all existing players first
+for _, player in ipairs(Players:GetPlayers()) do
+    HookPlayer(player)
+end
+
+-- Hook newly joined players
+Players.PlayerAdded:Connect(HookPlayer)
 
 -- PlayerRemoving
 Players.PlayerRemoving:Connect(function(player)
     CallbackLib:Fire("onPlayerRemoved", player)
 end)
 
--- RenderStep (every frame)
+-- RenderStep (fires every frame)
 RunService.RenderStepped:Connect(function(delta)
     CallbackLib:Fire("onRenderStep", delta)
 end)
 
 -------------------------------------------------------
--- 🔹 Example usage (you can delete this in prod)
+-- ✅ Example usage (commented)
 -------------------------------------------------------
 --[[
 CallbackLib:CreateCallback("onPlayerAdded"):Connect(function(plr)
-    print("[Callback] Player joined:", plr.Name)
+    print("[+] Player joined:", plr.Name)
 end)
 
 CallbackLib:CreateCallback("onChatMessage"):Connect(function(plr, msg)
-    print(plr.Name .. " said:", msg)
-end)
-
-CallbackLib:CreateCallback("onRenderStep"):Connect(function(dt)
-    -- print("Frame update:", dt)
+    print(plr.Name .. " said: " .. msg)
 end)
 ]]
 
