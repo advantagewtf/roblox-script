@@ -665,7 +665,7 @@ Moonlight.DisplayOrder = 100
 LoadingFrame.Version.Text = Release
 
 -- Thanks to Latte Softworks for the Lucide integration for Roblox
-local Icons = loadWithTimeout('https://raw.githubusercontent.com/SiriusSoftwareLtd/Moonlight/refs/heads/main/icons.lua')
+local Icons = loadWithTimeout('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua')
 -- Variables
 
 local CFileName = nil
@@ -673,7 +673,6 @@ local CEnabled = false
 local Minimised = false
 local Hidden = false
 local Debounce = false
-local searchOpen = false
 local Notifications = Moonlight.Notifications
 
 local SelectedTheme = MoonlightLibrary.Theme.Default
@@ -692,17 +691,13 @@ local function ChangeTheme(Theme)
 
 	Moonlight.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
 	Moonlight.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
-	Moonlight.Main.Topbar.Search.ImageColor3 = SelectedTheme.TextColor
+	
 	if Topbar:FindFirstChild('Settings') then
 		Moonlight.Main.Topbar.Settings.ImageColor3 = SelectedTheme.TextColor
 		Moonlight.Main.Topbar.Divider.BackgroundColor3 = SelectedTheme.ElementStroke
 	end
 
-	Main.Search.BackgroundColor3 = SelectedTheme.TextColor
-	Main.Search.Shadow.ImageColor3 = SelectedTheme.TextColor
-	Main.Search.Search.ImageColor3 = SelectedTheme.TextColor
-	Main.Search.Input.PlaceholderColor3 = SelectedTheme.TextColor
-	Main.Search.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+
 
 	if Main:FindFirstChild('Notice') then
 		Main.Notice.BackgroundColor3 = SelectedTheme.Background
@@ -1015,69 +1010,8 @@ function MoonlightLibrary:Notify(data) -- action e.g open messages
 	end)
 end
 
-local function openSearch()
-	searchOpen = true
 
-	Main.Search.BackgroundTransparency = 1
-	Main.Search.Shadow.ImageTransparency = 1
-	Main.Search.Input.TextTransparency = 1
-	Main.Search.Search.ImageTransparency = 1
-	Main.Search.UIStroke.Transparency = 1
-	Main.Search.Size = UDim2.new(1, 0, 0, 80)
-	Main.Search.Position = UDim2.new(0.5, 0, 0, 70)
 
-	Main.Search.Input.Interactable = true
-
-	Main.Search.Visible = true
-
-	for _, tabbtn in ipairs(TabList:GetChildren()) do
-		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-			tabbtn.Interact.Visible = false
-			TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {BackgroundTransparency = 1}):Play()
-			TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {TextTransparency = 1}):Play()
-			TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {ImageTransparency = 1}):Play()
-			TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Transparency = 1}):Play()
-		end
-	end
-
-	Main.Search.Input:CaptureFocus()
-	TweenService:Create(Main.Search.Shadow, TweenInfo.new(0.05, Enum.EasingStyle.Quint), {ImageTransparency = 0.95}):Play()
-	TweenService:Create(Main.Search, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Position = UDim2.new(0.5, 0, 0, 57), BackgroundTransparency = 0.9}):Play()
-	TweenService:Create(Main.Search.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Transparency = 0.8}):Play()
-	TweenService:Create(Main.Search.Input, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {TextTransparency = 0.2}):Play()
-	TweenService:Create(Main.Search.Search, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {ImageTransparency = 0.5}):Play()
-	TweenService:Create(Main.Search, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Size = UDim2.new(1, -35, 0, 35)}):Play()
-end
-
-local function closeSearch()
-	searchOpen = false
-
-	TweenService:Create(Main.Search, TweenInfo.new(0.35, Enum.EasingStyle.Quint), {BackgroundTransparency = 1, Size = UDim2.new(1, -55, 0, 30)}):Play()
-	TweenService:Create(Main.Search.Search, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-	TweenService:Create(Main.Search.Shadow, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-	TweenService:Create(Main.Search.UIStroke, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-	TweenService:Create(Main.Search.Input, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-
-	for _, tabbtn in ipairs(TabList:GetChildren()) do
-		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-			tabbtn.Interact.Visible = true
-			if tostring(Elements.UIPageLayout.CurrentPage) == tabbtn.Title.Text then
-				TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {BackgroundTransparency = 0}):Play()
-				TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {ImageTransparency = 0}):Play()
-				TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {TextTransparency = 0}):Play()
-				TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Transparency = 1}):Play()
-			else
-				TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {BackgroundTransparency = 0.7}):Play()
-				TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {ImageTransparency = 0.2}):Play()
-				TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {TextTransparency = 0.2}):Play()
-				TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {Transparency = 0.5}):Play()
-			end
-		end
-	end
-
-	Main.Search.Input.Text = ''
-	Main.Search.Input.Interactable = false
-end
 
 local function Hide(notify: boolean?)
 	if MPrompt then
@@ -1089,7 +1023,6 @@ local function Hide(notify: boolean?)
 		MPrompt.Visible = true
 	end
 
-	task.spawn(closeSearch)
 
 	Debounce = true
 	if notify then
@@ -1324,7 +1257,6 @@ local function Minimise()
 
 	Topbar.UIStroke.Color = SelectedTheme.ElementStroke
 
-	task.spawn(closeSearch)
 
 	for _, tabbtn in ipairs(TabList:GetChildren()) do
 		if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
@@ -1403,7 +1335,6 @@ end
 local function createSettings(window)
 	if not (writefile and isfile and readfile and isfolder and makefolder) then
 		if Topbar['Settings'] then Topbar.Settings.Visible = false end
-		Topbar['Search'].Position = UDim2.new(1, -75, 0.5, 0)
 		warn('Can\'t create settings as no file-saving functionality is available.')
 		return
 	end
@@ -3386,7 +3317,7 @@ function MoonlightLibrary:CreateWindow(Settings)
 	Topbar.Divider.BackgroundColor3 = SelectedTheme.ElementStroke
 	Topbar.CornerRepair.BackgroundTransparency = 1
 	Topbar.Title.TextTransparency = 1
-	Topbar.Search.ImageTransparency = 1
+
 	if Topbar:FindFirstChild('Settings') then
 		Topbar.Settings.ImageTransparency = 1
 	end
@@ -3401,8 +3332,6 @@ function MoonlightLibrary:CreateWindow(Settings)
 	task.wait(0.1)
 	TweenService:Create(Topbar.Divider, TweenInfo.new(1, Enum.EasingStyle.Exponential), {Size = UDim2.new(1, 0, 0, 1)}):Play()
 	TweenService:Create(Topbar.Title, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {TextTransparency = 0}):Play()
-	task.wait(0.05)
-	TweenService:Create(Topbar.Search, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {ImageTransparency = 0.8}):Play()
 	task.wait(0.05)
 	if Topbar:FindFirstChild('Settings') then
 		TweenService:Create(Topbar.Settings, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {ImageTransparency = 0.8}):Play()
@@ -3472,59 +3401,8 @@ Topbar.ChangeSize.MouseButton1Click:Connect(function()
 	end
 end)
 
-Main.Search.Input:GetPropertyChangedSignal('Text'):Connect(function()
-	if #Main.Search.Input.Text > 0 then
-		if not Elements.UIPageLayout.CurrentPage:FindFirstChild('SearchTitle-fsefsefesfsefesfesfThanks') then 
-			local searchTitle = Elements.Template.SectionTitle:Clone()
-			searchTitle.Parent = Elements.UIPageLayout.CurrentPage
-			searchTitle.Name = 'SearchTitle-fsefsefesfsefesfesfThanks'
-			searchTitle.LayoutOrder = -100
-			searchTitle.Title.Text = "Results from '"..Elements.UIPageLayout.CurrentPage.Name.."'"
-			searchTitle.Visible = true
-		end
-	else
-		local searchTitle = Elements.UIPageLayout.CurrentPage:FindFirstChild('SearchTitle-fsefsefesfsefesfesfThanks')
 
-		if searchTitle then
-			searchTitle:Destroy()
-		end
-	end
 
-	for _, element in ipairs(Elements.UIPageLayout.CurrentPage:GetChildren()) do
-		if element.ClassName ~= 'UIListLayout' and element.Name ~= 'Placeholder' and element.Name ~= 'SearchTitle-fsefsefesfsefesfesfThanks' then
-			if element.Name == 'SectionTitle' then
-				if #Main.Search.Input.Text == 0 then
-					element.Visible = true
-				else
-					element.Visible = false
-				end
-			else
-				if string.lower(element.Name):find(string.lower(Main.Search.Input.Text), 1, true) then
-					element.Visible = true
-				else
-					element.Visible = false
-				end
-			end
-		end
-	end
-end)
-
-Main.Search.Input.FocusLost:Connect(function(enterPressed)
-	if #Main.Search.Input.Text == 0 and searchOpen then
-		task.wait(0.12)
-		closeSearch()
-	end
-end)
-
-Topbar.Search.MouseButton1Click:Connect(function()
-	task.spawn(function()
-		if searchOpen then
-			closeSearch()
-		else
-			openSearch()
-		end
-	end)
-end)
 
 if Topbar:FindFirstChild('Settings') then
 	Topbar.Settings.MouseButton1Click:Connect(function()
